@@ -4,8 +4,8 @@ import ReactDOM from 'react-dom'
 const Header = ({text}) =>
   <h1>{text}</h1>
 
-const Total = props => {
-  const total = props.parts[0].exercises + props.parts[1].exercises + props.parts[2].exercises
+const Total = ({parts}) => {
+  const total = parts.reduce((sum, part) => sum + part.exercises, 0)
 
   return <p>yhteensä {total} tehtävää</p>
 }
@@ -21,6 +21,7 @@ const Content = ({parts}) => {
   return (
     <div>
       {rows()}
+      <Total parts={parts} />
     </div>
   )
 }
@@ -50,6 +51,11 @@ const App = () => {
         name: 'Komponenttien tila',
         exercises: 14,
         id: 3
+      },
+      {
+        name: 'Redux',
+        exercises: 7,
+        id: 4
       }
     ]
   } 
