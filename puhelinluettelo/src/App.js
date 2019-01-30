@@ -2,13 +2,18 @@ import React, { useState } from 'react'
 
 const App = () => {
   const [ persons, setPersons] = useState([
-    { name: 'Arto Hellas', number: '045-123456' }
+    { name: 'Arto Hellas', number: '045-123456' },
+    { name: 'Matti Tienari', number: '040-123456' },
+    { name: 'Arto Järvinen', number: '041-413442' },
+    { name: 'Tuomas Kyrölä', number: '09-210442' }
   ]) 
   const [ newName, setNewName ] = useState('')
-  const [ newNumber, setNewNumber] = useState('')
+  const [ newNumber, setNewNumber ] = useState('')
+  const [ filter, setFilter ] = useState('')
 
   const handleNameChange = (event) => setNewName(event.target.value)
   const handleNumberChange = (event) => setNewNumber(event.target.value)
+  const handleFilterChange = (event) => setFilter(event.target.value)
 
   const addPerson = (event) => {
     event.preventDefault()
@@ -27,7 +32,15 @@ const App = () => {
 
   return (
     <div>
-      <h2>Puhelinluettelo</h2>
+      <h1>Puhelinluettelo</h1>
+      <div>
+        rajaa näytettäviä
+        <input
+          value={filter} 
+          onChange={handleFilterChange}
+        />
+      </div>
+      <h2>lisää uusi</h2>
       <form onSubmit={addPerson}>
         <div>
           nimi: 
@@ -48,10 +61,12 @@ const App = () => {
         </div>
       </form>
       <h2>Numerot</h2>
-      {persons.map((person, key) => 
-        <span key={person.name}>
-          {person.name} {person.number}<br/>
-        </span>)}
+      {persons.filter(person => 
+        person.name.toLowerCase().includes(filter.toLowerCase()))
+        .map((person, key) => 
+          <span key={person.name}>
+            {person.name} {person.number}<br/>
+          </span>)}
     </div>
   )
 
