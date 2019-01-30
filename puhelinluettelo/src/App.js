@@ -12,8 +12,15 @@ const App = () => {
 
   const addPerson = (event) => {
     event.preventDefault()
-    const personObject = { name: newName }
-    setPersons(persons.concat(personObject))
+
+    if (persons.some(person => person.name === newName)) {
+      alert(`${newName} on jo luettelossa`)
+    }
+    else {
+      const personObject = { name: newName }
+      setPersons(persons.concat(personObject))
+    }
+    
     setNewName('')
   }
 
