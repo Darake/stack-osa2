@@ -16,7 +16,7 @@ const Country = ({country}) =>
     <img src={country.flag} alt="Flag" height="150" width="200" />
   </div>
 
-const Countries = ({countries, filter}) => {
+const Countries = ({countries, filter, setFilter}) => {
   const filteredCountries = countries
     .filter(country => country.name.toLowerCase().includes(filter.toLowerCase()))
 
@@ -26,7 +26,10 @@ const Countries = ({countries, filter}) => {
     return (
       <div>
         {filteredCountries.map((country) => 
-          <span key={country.name}>{country.name} <br/></span>)}
+         <div key={country.name}>
+          <span>{country.name}</span>
+          <button onClick={() => setFilter(country.name)} >show</button>
+        </div>)}
       </div>
     )
   } else {
@@ -44,14 +47,14 @@ const Filter = ({filter, handleChange}) =>
   </div>
 
 const App = () => {
-  const [countries, setContries] = useState([])
+  const [countries, setCountries] = useState([])
   const [filter, setFilter] = useState('')
 
   useEffect(() => {
     axios
       .get('https://restcountries.eu/rest/v2/all')
       .then(response => {
-        setContries(response.data)
+        setCountries(response.data)
       })
   }, [])
 
@@ -60,7 +63,7 @@ const App = () => {
   return (
     <div>
       <Filter filter={filter} handleChange={handleFilterChange} />
-      <Countries countries={countries} filter={filter} />
+      <Countries countries={countries} filter={filter} setFilter={setFilter} />
     </div>
   )
 }
