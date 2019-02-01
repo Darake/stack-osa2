@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import personService from './services/persons'
 
-const Notification = ({message}) => {
-  if (message === null) {
+const Notification = ({notification}) => {
+  if (notification.message === null) {
     return null
   }
 
   const notificationStyle = {
-    color: 'green',
+    color: `${notification.color}`,
     background: 'lightgrey',
     fontSize: 20,
     borderStyle: 'solid',
@@ -18,7 +18,7 @@ const Notification = ({message}) => {
 
   return (
     <div style={notificationStyle}>
-      {message}
+      {notification.message}
     </div>
   )
 }
@@ -77,7 +77,8 @@ const App = () => {
   const [ newName, setNewName ] = useState('')
   const [ newNumber, setNewNumber ] = useState('')
   const [ filter, setFilter ] = useState('')
-  const [ notification, setNotificaiton] = useState(null)
+  const [ notification, setNotificaiton] = useState({message: null, color: 'green'})
+  console.log(notification)
 
   useEffect(() => {
     personService
@@ -109,9 +110,10 @@ const App = () => {
     setNewNumber('')
   }
 
-  const notify = message => {
-    setNotificaiton(message)
-    setTimeout(() => setNotificaiton(null), 3000)
+  const notify = (message, color) => {
+    console.log(message)
+    setNotificaiton({message: message, color: color})
+    setTimeout(() => setNotificaiton({message: null, color: 'green'}), 3000)
   }
 
   const removePerson = person => {
@@ -119,7 +121,7 @@ const App = () => {
       personService
         .remove(person.id)
           .then(() => {setPersons(persons.filter(p => p.id !== person.id))})
-          .then(() => notify(`Poistettiin ${person.name}`))
+          .then(() => notify(`Poistettiin ${person.name}`, 'green'))
     }
   }
 
@@ -127,7 +129,7 @@ const App = () => {
     personService
       .create(personObject)
         .then(returnedPerson => setPersons(persons.concat(returnedPerson)))
-        .then(() => notify(`Lisättiin ${personObject.name}`))
+        .then(() => notify(`Lisättiin ${personObject.name}`, 'green'))
 
   const updatePerson = (id, personObject) =>
     personService
@@ -135,12 +137,16 @@ const App = () => {
         .then(returnedPerson =>
           setPersons(persons.map(person => person.id !== id ? person : returnedPerson)))
         .then(() => 
-          notify(`Päivitettiin seuraavan henkilön numero: ${personObject.name}`))
+          notify(`Päivitettiin seuraavan henkilön numero: ${personObject.name}`, 'green'))
+        .catch(error => {
+          notify(`Henkilö ${personObject.name} on jo poistettu`, 'red')
+          setPersons(persons.filter(p => p.name !== personObject.name))
+        })
 
   return (
     <div>
       <h1>Puhelinluettelo</h1>
-      <Notification message={notification} />
+      <Notification notification={notification} />
       <Filter filter={filter} handleChange={handleFilterChange} />
       <h2>lisää uusi</h2>
       <PersonForm
