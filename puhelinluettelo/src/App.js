@@ -1,6 +1,28 @@
 import React, { useState, useEffect } from 'react'
 import personService from './services/persons'
 
+const Notification = ({message}) => {
+  if (message === null) {
+    return null
+  }
+
+  const notificationStyle = {
+    color: 'green',
+    background: 'lightgrey',
+    fontSize: 20,
+    borderStyle: 'solid',
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 10
+  }
+
+  return (
+    <div style={notificationStyle}>
+      {message}
+    </div>
+  )
+}
+
 const Filter = ({filter, handleChange}) =>
   <div>
     rajaa näytettäviä
@@ -55,6 +77,7 @@ const App = () => {
   const [ newName, setNewName ] = useState('')
   const [ newNumber, setNewNumber ] = useState('')
   const [ filter, setFilter ] = useState('')
+  const [ notification, setNotificaiton] = useState(null)
 
   useEffect(() => {
     personService
@@ -86,31 +109,38 @@ const App = () => {
     setNewNumber('')
   }
 
+  const notify = message => {
+    setNotificaiton(message)
+    setTimeout(() => setNotificaiton(null), 3000)
+  }
+
   const removePerson = person => {
     if (window.confirm(`Poistetaanko ${person.name}`)) {
       personService
         .remove(person.id)
-          .then(() => {
-          setPersons(persons.filter(p => p.id !== person.id))
-          })
+          .then(() => {setPersons(persons.filter(p => p.id !== person.id))})
+          .then(() => notify(`Poistettiin ${person.name}`))
     }
   }
 
-  const addPerson = (personObject) =>
+  const addPerson = personObject =>
     personService
       .create(personObject)
-        .then(returnedPerson => 
-        setPersons(persons.concat(returnedPerson)))
+        .then(returnedPerson => setPersons(persons.concat(returnedPerson)))
+        .then(() => notify(`Lisättiin ${personObject.name}`))
 
   const updatePerson = (id, personObject) =>
     personService
       .update(id, personObject)
         .then(returnedPerson =>
-        setPersons(persons.map(person => person.id !== id ? person : returnedPerson)))
+          setPersons(persons.map(person => person.id !== id ? person : returnedPerson)))
+        .then(() => 
+          notify(`Päivitettiin seuraavan henkilön numero: ${personObject.name}`))
 
   return (
     <div>
       <h1>Puhelinluettelo</h1>
+      <Notification message={notification} />
       <Filter filter={filter} handleChange={handleFilterChange} />
       <h2>lisää uusi</h2>
       <PersonForm
