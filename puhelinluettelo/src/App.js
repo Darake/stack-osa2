@@ -68,19 +68,18 @@ const App = () => {
   const handleNumberChange = (event) => setNewNumber(event.target.value)
   const handleFilterChange = (event) => setFilter(event.target.value)
 
-  const addPerson = (event) => {
+  const addOrUpdatePerson = (event) => {
     event.preventDefault()
+    const personObject = { name: newName, number: newNumber }
+    const person = persons.find(person => person.name === newName)
 
-    if (persons.some(person => person.name === newName)) {
-      alert(`${newName} on jo luettelossa`)
+    if (person !== undefined) {
+      if (window.confirm(`${newName} on jo luettelossa, korvataanko vanha numero uudella?`)) {
+        updatePerson(person.id, personObject)
+      }
     }
     else {
-      const personObject = { name: newName, number: newNumber }
-      personService
-        .create(personObject)
-          .then(returnedPerson => {
-          setPersons(persons.concat(returnedPerson))
-          })
+      addPerson(personObject)
     }
     
     setNewName('')
@@ -97,13 +96,25 @@ const App = () => {
     }
   }
 
+  const addPerson = (personObject) =>
+    personService
+      .create(personObject)
+        .then(returnedPerson => 
+        setPersons(persons.concat(returnedPerson)))
+
+  const updatePerson = (id, personObject) =>
+    personService
+      .update(id, personObject)
+        .then(returnedPerson =>
+        setPersons(persons.map(person => person.id !== id ? person : returnedPerson)))
+
   return (
     <div>
       <h1>Puhelinluettelo</h1>
       <Filter filter={filter} handleChange={handleFilterChange} />
       <h2>lisää uusi</h2>
-      <PersonForm 
-        addPerson={addPerson}
+      <PersonForm
+        addPerson={addOrUpdatePerson}
         newName={newName}
         handleNameChange={handleNameChange}
         newNumber={newNumber}
