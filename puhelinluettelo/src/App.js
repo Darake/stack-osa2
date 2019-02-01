@@ -31,14 +31,36 @@ const PersonForm = ({addPerson, newName, handleNameChange, newNumber, handleNumb
     </div>
   </form>
 
-const Person = ({person}) => 
-  <span>{person.name} {person.number} <br/></span>
+const Person = ({person, persons, setPersons}) => {
+  const removePerson = id => {
+    if (window.confirm(`Poistetaanko ${person.name}`)) {
+      personService
+        .remove(id)
+          .then(() => {
+          setPersons(persons.filter(person => person.id !== id))
+          })
+    }
+  }
 
-const Persons = ({persons, filter}) =>
+  return (
+    <div>
+        <span>{person.name} {person.number}</span>
+        <button onClick={() => removePerson(person.id)}>poista</button>
+    </div>
+  )
+}
+
+const Persons = ({persons, filter, setPersons}) =>
   <div>
     {persons
       .filter(person => person.name.toLowerCase().includes(filter.toLowerCase()))
-      .map((person) => <Person key={person.name} person={person} />)}
+      .map((person) => 
+        <Person 
+          key={person.id} 
+          person={person} 
+          persons={persons}
+          setPersons={setPersons}
+        />)}
   </div>
 
 const App = () => {
@@ -91,7 +113,7 @@ const App = () => {
         handleNumberChange={handleNumberChange}
       />
       <h2>Numerot</h2>
-      <Persons persons={persons} filter={filter}/>
+      <Persons persons={persons} filter={filter} setPersons={setPersons} />
     </div>
   )
 
