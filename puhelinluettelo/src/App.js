@@ -31,26 +31,13 @@ const PersonForm = ({addPerson, newName, handleNameChange, newNumber, handleNumb
     </div>
   </form>
 
-const Person = ({person, persons, setPersons}) => {
-  const removePerson = id => {
-    if (window.confirm(`Poistetaanko ${person.name}`)) {
-      personService
-        .remove(id)
-          .then(() => {
-          setPersons(persons.filter(person => person.id !== id))
-          })
-    }
-  }
+const Person = ({person, removePerson}) => 
+  <div>
+      <span>{person.name} {person.number}</span>
+      <button onClick={() => removePerson(person)}>poista</button>
+  </div>
 
-  return (
-    <div>
-        <span>{person.name} {person.number}</span>
-        <button onClick={() => removePerson(person.id)}>poista</button>
-    </div>
-  )
-}
-
-const Persons = ({persons, filter, setPersons}) =>
+const Persons = ({persons, filter, removePerson}) =>
   <div>
     {persons
       .filter(person => person.name.toLowerCase().includes(filter.toLowerCase()))
@@ -59,7 +46,7 @@ const Persons = ({persons, filter, setPersons}) =>
           key={person.id} 
           person={person} 
           persons={persons}
-          setPersons={setPersons}
+          removePerson={removePerson}
         />)}
   </div>
 
@@ -100,6 +87,16 @@ const App = () => {
     setNewNumber('')
   }
 
+  const removePerson = person => {
+    if (window.confirm(`Poistetaanko ${person.name}`)) {
+      personService
+        .remove(person.id)
+          .then(() => {
+          setPersons(persons.filter(p => p.id !== person.id))
+          })
+    }
+  }
+
   return (
     <div>
       <h1>Puhelinluettelo</h1>
@@ -113,7 +110,7 @@ const App = () => {
         handleNumberChange={handleNumberChange}
       />
       <h2>Numerot</h2>
-      <Persons persons={persons} filter={filter} setPersons={setPersons} />
+      <Persons persons={persons} filter={filter} removePerson={removePerson} />
     </div>
   )
 
