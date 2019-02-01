@@ -78,7 +78,6 @@ const App = () => {
   const [ newNumber, setNewNumber ] = useState('')
   const [ filter, setFilter ] = useState('')
   const [ notification, setNotificaiton] = useState({message: null, color: 'green'})
-  console.log(notification)
 
   useEffect(() => {
     personService
@@ -111,7 +110,6 @@ const App = () => {
   }
 
   const notify = (message, color) => {
-    console.log(message)
     setNotificaiton({message: message, color: color})
     setTimeout(() => setNotificaiton({message: null, color: 'green'}), 3000)
   }
